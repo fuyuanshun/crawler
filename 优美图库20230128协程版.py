@@ -1,19 +1,17 @@
 import asyncio
-import datetime
+import os
 import time
 
 import aiofiles
 import aiohttp
-from lxml import html
-
-from concurrent.futures import ThreadPoolExecutor
 import requests
-import os
+from lxml import html
 
 # 爬取的网址
 url = "http://www.umei.cc/"
 # 下载文件的存储路径
 download_path = "D:/mt/"
+
 
 # 多线程处理下载任务
 async def download_image(image_url, name, session):
@@ -29,6 +27,7 @@ async def download_image(image_url, name, session):
         print(e)
     else:
         print(name + " success!")
+
 
 # 使用协程处理每个子页面
 async def get_child_html(xpath_href):
@@ -51,6 +50,7 @@ async def get_child_html(xpath_href):
                     tasks.append(download_image(image_url, name, session))
         await asyncio.wait(tasks)
 
+
 def main():
     request = requests.request("GET", url)
     # 不是200则表示请求失败
@@ -62,11 +62,10 @@ def main():
     # 转为xpath对象
     xpath_data = html.etree.HTML(html_content)
     xpath_href = xpath_data.xpath("//a/@href")
-    # 使用异步协程处理
-    # asyncio.run(get_child_html(xpath_href))
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(get_child_html(xpath_href))
+
 
 if __name__ == "__main__":
     print("*****************开始******************")
