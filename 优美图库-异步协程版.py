@@ -16,20 +16,19 @@ def get_all_tag_html():
     return html.xpath("/html/body/div[2]//a[position()>1]/@href")
 
 async def download_img(url, name,session):
-    # async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
-        try:
-            async with session.get(url) as resp:
-                content = await resp.content.read()
-                if not os.path.exists(os.getcwd() + os.sep + '图片'):
-                    os.mkdir(os.getcwd() + os.sep + '图片')
-                async with aiofiles.open(os.getcwd() + os.sep + '图片' + os.sep + name+".jpg",'wb') as f:
-                    await f.write(content)
-                    print(url + " success!")
-        except Exception:
-            print(url + " error")
+    try:
+        async with session.get(url) as resp:
+            content = await resp.content.read()
+            if not os.path.exists(os.getcwd() + os.sep + '图片'):
+                os.mkdir(os.getcwd() + os.sep + '图片')
+            async with aiofiles.open(os.getcwd() + os.sep + '图片' + os.sep + name+".jpg",'wb') as f:
+                await f.write(content)
+                print(url + " success!")
+    except Exception:
+        print(url + " error")
 
 async def get_img_src(lis):
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
         tasks = []
         for li in lis:
             src = li.xpath("./a/img/@src")[0]
